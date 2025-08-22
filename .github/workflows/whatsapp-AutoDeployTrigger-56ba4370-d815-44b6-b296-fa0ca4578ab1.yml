@@ -10,12 +10,14 @@ on:
 
   workflow_dispatch: # Allow manual trigger
 
+# ✅ Global permissions (applies to all jobs)
+permissions:
+  id-token: write   # Required for OIDC auth with Azure
+  contents: read    # Needed for repo checkout
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # Required for OIDC auth with Azure
-      contents: read
 
     steps:
       # Checkout repo
@@ -38,7 +40,3 @@ jobs:
           containerAppName: whatsapp              ## Name of your Container App
           resourceGroup: DefaultResourceGroup-CCAN
           imageToBuild: whatsapp:${{ github.sha }} ## Auto-builds image with Oryx
-
-
-
-
