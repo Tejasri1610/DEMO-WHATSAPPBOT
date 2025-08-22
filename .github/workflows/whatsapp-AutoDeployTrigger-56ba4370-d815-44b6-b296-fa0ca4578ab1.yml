@@ -35,7 +35,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}  # Path to your source code
-          containerAppName: whatsapp              # Name of your Container App
+          containerAppName: whatsapp              ## Name of your Container App
           resourceGroup: DefaultResourceGroup-CCAN
           imageToBuild: whatsapp:${{ github.sha }} ## Auto-builds image with Oryx
 
