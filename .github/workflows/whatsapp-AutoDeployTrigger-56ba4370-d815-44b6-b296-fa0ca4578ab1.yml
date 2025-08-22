@@ -30,7 +30,7 @@ jobs:
           tenant-id: ${{ secrets.WHATSAPP_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WHATSAPP_AZURE_SUBSCRIPTION_ID }}
 
-      ## Build & deploy to Azure Container App
+      ### Build & deploy to Azure Container App
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
