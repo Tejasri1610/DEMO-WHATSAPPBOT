@@ -14,5 +14,5 @@ COPY . .
 # Expose port (change if your app runs on a different port)
 EXPOSE 8000
 
-# Run app
+# Run appp
 CMD ["python", "app.py"]
