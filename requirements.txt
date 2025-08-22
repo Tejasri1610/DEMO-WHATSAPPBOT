@@ -1,6 +1,5 @@
 flask
 twilio
-dotenv
+python-dotenv
 supabase
 openai
-difflib
