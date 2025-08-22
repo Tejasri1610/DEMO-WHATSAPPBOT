@@ -1,0 +1,6 @@
+flask
+twilio
+dotenv
+supabase
+openai
+difflib
