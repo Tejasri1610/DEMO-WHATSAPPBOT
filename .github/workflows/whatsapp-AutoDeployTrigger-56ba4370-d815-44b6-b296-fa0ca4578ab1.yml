@@ -1,40 +1,35 @@
-name: Deploy WhatsApp Bot to Azure
+name: Deploy to Azure Container Apps
 
 on:
   push:
     branches:
-      - main
-    paths:
-      - '**'
-      - '.github/workflows/whatsapp-AutoDeployTrigger.yml'
+      - main   # Trigger on push to main branch
 
-  workflow_dispatch: # Manual trigger
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write   # Required for OIDC auth with Azure
-      contents: read
 
     steps:
-      # Checkout repo
+      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Login to Azure using federated identity
-      - name: Azure Login
-        uses: azure/login@v2
+      # 2. Azure login (OIDC)
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.WHATSAPP_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.WHATSAPP_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.WHATSAPP_AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Deploy to Azure Container Apps
+      # 3. Deploy from source code (no ACR, no Dockerfile)
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}   # Code path
-          containerAppName: whatsapp               # Your Container App name
-          resourceGroup: DefaultResourceGroup-CCAN # Your resource group
-          imageToBuild: whatsapp:${{ github.sha }} # Auto-builds image with Oryx
+          resourceGroup: DefaultResourceGroup-CCAN
+          containerAppName: whatsapp
+          sourcePath: .
