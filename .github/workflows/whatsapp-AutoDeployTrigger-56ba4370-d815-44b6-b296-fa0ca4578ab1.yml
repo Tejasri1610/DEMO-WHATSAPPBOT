@@ -1,29 +1,28 @@
 name: Trigger auto deployment for whatsapp
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
+    branches:
+      - main   # Deploy only on changes to main branch
     paths:
-    - '**'
-    - '.github/workflows/whatsapp-AutoDeployTrigger-56ba4370-d815-44b6-b296-fa0ca4578ab1.yml'
+      - '**'
+      - '.github/workflows/whatsapp-AutoDeployTrigger.yml'
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+    permissions:
+      id-token: write # Required for OIDC auth with Azure
+      contents: read
 
     steps:
-      - name: Checkout to the branch
-        uses: actions/checkout@v2
+      # Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
+      # Login to Azure using federated identity (no passwords!)
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -31,19 +30,15 @@ jobs:
           tenant-id: ${{ secrets.WHATSAPP_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WHATSAPP_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      # Build & deploy to Azure Container App
+      - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
-          registryUrl: 
-          registryUsername: ${{ secrets.WHATSAPP_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.WHATSAPP_REGISTRY_PASSWORD }}
-          containerAppName: whatsapp
+          appSourcePath: ${{ github.workspace }}  # Path to your source code
+          containerAppName: whatsapp              # Name of your Container App
           resourceGroup: DefaultResourceGroup-CCAN
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
+          imageToBuild: whatsapp:${{ github.sha }} # Auto-builds image with Oryx
+
+
 
 
