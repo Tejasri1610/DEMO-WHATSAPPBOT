@@ -3,7 +3,7 @@ name: Build and Deploy to Azure Container Apps
 on:
   push:
     branches:
-      - main   # Trigger on push to main branch
+      - main   # Trigger on pus4h to main branch
 
 jobs:
   build-and-deploy:
@@ -43,3 +43,4 @@ jobs:
           resourceGroup: DefaultResourceGroup-CCAN
           containerAppName: whatsapp
           imageToDeploy: registrybot123456.azurecr.io/whatsapp:${{ github.sha }}
+
